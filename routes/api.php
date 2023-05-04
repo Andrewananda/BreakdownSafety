@@ -25,5 +25,5 @@ Route::group([
     Route::post('register', [AuthController::class, 'register'])->name('register');
     Route::post('profile', [AuthController::class, 'me'])->name('profile');
     Route::post('logout', [AuthController::class, 'logout']);
-
+    Route::get('services', [ApiController::class, 'getServices'])->name('services');
 });

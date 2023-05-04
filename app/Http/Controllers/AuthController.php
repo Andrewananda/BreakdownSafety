@@ -25,8 +25,15 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login()
+    public function login(Request $request)
     {
+        $validation = Validator::make($request->all(), [
+            'email'=>'required',
+            'password'=>'required'
+        ]);
+        if($validation->fails()) {
+            return GeneralApiResponse::generalErrorResponse( $validation->errors()->first(), 0);
+        }
         $credentials = request(['email', 'password']);
 
         if (! $token = auth()->attempt($credentials)) {
@@ -34,9 +41,9 @@ class AuthController extends Controller
         }
         $data = [
           'user'=>Auth::user(),
-           'authorization'=>$this->respondWithToken($token)
+          'authorization'=>$this->respondWithToken($token)
         ];
-        return GeneralApiResponse::generalSuccessResponse('Login was success', '000', $data); //$this->respondWithToken($token);
+        return GeneralApiResponse::generalSuccessResponse('Login was success', 1, $data);
     }
 
     /**
@@ -46,7 +53,11 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(auth()->user());
+        if (auth()->user()) {
+            return response()->json(auth()->user());
+        }else {
+            return GeneralApiResponse::generalErrorResponse('Unauthorised', 401);
+        }
     }
 
     /**
@@ -69,7 +80,7 @@ class AuthController extends Controller
         ]);
 
         if($validation->fails()){
-            return GeneralApiResponse::generalErrorResponse($validation->errors()->first(), '091');
+            return GeneralApiResponse::generalErrorResponse($validation->errors()->first(), 0);
         }
         $user = new User();
         $user->name = $request->post('name');
@@ -77,7 +88,7 @@ class AuthController extends Controller
         $user->password = Hash::make($request->post('password'));
         $user->save();
 
-        return GeneralApiResponse::generalSuccessResponse('User created successfully', '000', $user);
+        return GeneralApiResponse::generalSuccessResponse('User created successfully', 1, $user);
     }
 
     /**
