@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -17,7 +18,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        $this->middleware('auth.jwt', ['except' => ['login', 'register', 'refresh']]);
     }
 
     /**
@@ -44,6 +45,10 @@ class AuthController extends Controller
           'authorization'=>$this->respondWithToken($token)
         ];
         return GeneralApiResponse::generalSuccessResponse('Login was success', 1, $data);
+    }
+
+    public function auth() {
+        return response()->json(['error' => 'Unauthorized'], 401);
     }
 
     /**

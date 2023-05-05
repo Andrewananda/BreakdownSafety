@@ -15,15 +15,18 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
+Route::post('register', [AuthController::class, 'register'])->name('register');
+Route::post('login', [AuthController::class, 'login'])->name('login');
 
 Route::group([
-    'middleware' => 'api',
+    'middleware' => 'auth.jwt',
     'prefix' => 'auth'
 ], function ($router) {
-    Route::post('login', [AuthController::class, 'login'])->name('login');
-    Route::post('register', [AuthController::class, 'register'])->name('register');
+    Route::post('refresh', [AuthController::class, 'refresh'])->name('refresh');
+    Route::post('logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('profile', [AuthController::class, 'me'])->name('profile');
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('services', [ApiController::class, 'getServices'])->name('services');
+    Route::post('order', [ApiController::class, 'order'])->name('order');
+    Route::get('service_providers', [ApiController::class, 'fetchServiceProviders'])->name('serviceProviders');
 });
